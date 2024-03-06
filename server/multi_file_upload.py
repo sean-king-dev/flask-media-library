@@ -5,10 +5,12 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "secret key"
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 
 
 path = os.getcwd()
+
+ffmpeg_path = '/usr/bin/ffmpeg'
 
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 

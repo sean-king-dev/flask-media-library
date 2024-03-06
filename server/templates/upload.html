@@ -19,8 +19,15 @@
     {% endwith %}
 
     <form method="post" enctype="multipart/form-data">
+
         <label for="imageFile">Upload Image:</label>
         <input type="file" name="imageFile" accept="image/*"><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+
+    <form method="post" enctype="multipart/form-data">
 
         <label for="videoFile">Upload Video:</label>
         <input type="file" name="videoFile" accept="video/*"><br>
