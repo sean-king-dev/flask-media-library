@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>File Upload</title>
+</head>
+<body>
+  <h1>File Uploads</h1>
+  
+  <form method="POST" enctype="multipart/form-data">
+    <div>
+      <label for="image">Upload Image:</label>
+      <input type="file" name="image" id="image" accept="image/*">
+    </div>
+
+    <div>
+      <label for="video">Upload Video:</label>
+      <input type="file" name="video" id="video" accept="video/*">
+    </div>
+
+    <div>
+      <input type="submit" value="Upload">
+    </div>
+  </form>
+
+  {% if file_url %}
+    <div>
+      <h2>{{ title }}</h2>
+      <p>{{ file_url }}</p>
+      <button onclick="copyToClipboard('{{ file_url }}')">Copy URL</button>
+    </div>
+  {% endif %}
+
+  <script>
+    function copyToClipboard(text) {
+      const input = document.createElement('input');
+      input.value = text;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      alert('URL copied to clipboard!');
+    }
+  </script>
+</body>
+</html>
