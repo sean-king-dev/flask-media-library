@@ -4,10 +4,10 @@
 > Built with flask + jinja templating
 
 todos
-- [/] build file upload app
-- [/] extend it to multimedia app (handle different file types)
-- [/] separate into image upload app and video compression app
-- [/] expose url from video app
-- [/] add compression range slider to video compression app
+- [x] build file upload app
+- [x] extend it to multimedia app (handle different file types)
+- [x] separate into image upload app and video compression app
+- [x] expose url from video app
+- [x] add compression range slider to video compression app
 - [ ] separate css styles
 - [ ] add react to frontend templates
