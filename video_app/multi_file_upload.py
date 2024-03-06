@@ -48,10 +48,10 @@ def upload_file():
 
             compressed_video_path = compress_video(video_file_path, compression_percentage)
             
-            # Get the URL or filepath for the compressed video
+            
             file_url = url_for('uploaded_file', filename=os.path.basename(compressed_video_path))
             
-            # Set popup message with file sizes
+            
             original_size = os.path.getsize(video_file_path)
             compressed_size = os.path.getsize(compressed_video_path)
             popup_message = f'Video successfully uploaded and compressed at {compression_percentage}%. ' \
