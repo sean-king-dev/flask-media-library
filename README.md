@@ -10,4 +10,5 @@ todos
 - [x] expose url from video app
 - [x] add compression range slider to video compression app
 - [ ] separate css styles
+- [ ] add flask tests
 - [ ] add react to frontend templates
