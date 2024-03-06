@@ -7,18 +7,18 @@ app=Flask(__name__)
 app.secret_key = "secret key"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# Get current path
+
 path = os.getcwd()
-# file Upload
+
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
-# Make directory if uploads is not exists
+
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Allowed extension you can set your own
+
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
@@ -52,7 +52,7 @@ def upload_file():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         flash('File(s) successfully uploaded')
-        # return redirect('/')
+        
         return redirect(url_for('uploaded_file', filename=filename))
 
 

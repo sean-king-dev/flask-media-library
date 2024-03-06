@@ -7,25 +7,25 @@ app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# Get current path
+
 path = os.getcwd()
-# file Upload
+
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
-# Make directory if uploads is not exists
+
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Allowed extension you can set your own
+
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4'])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def compress_video(input_path):
-    # You may need to adjust the command based on your specific needs
+    
     output_path = os.path.splitext(input_path)[0] + '_compressed.mp4'
     subprocess.run([
         'ffmpeg',
@@ -62,7 +62,7 @@ def upload_file():
             video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             video_file.save(video_file_path)
 
-            # Compress the video
+            
             compressed_video_path = compress_video(video_file_path)
             file_url = url_for('uploaded_file', filename=compressed_video_path)
             flash('Video successfully uploaded and compressed')

@@ -9,18 +9,18 @@ app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-# Get current path
+
 path = os.getcwd()
-# File Upload
+
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
-# Make directory if uploads does not exist
+
 if not os.path.isdir(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Allowed extensions for images and videos
+
 ALLOWED_IMAGE_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 ALLOWED_VIDEO_EXTENSIONS = set(['mp4', 'avi', 'mkv', 'mov'])
 
@@ -53,15 +53,15 @@ def upload_file():
                 filename = secure_filename(file.filename)
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-                # Save the original file
+                
                 file.save(filepath)
 
-                # Determine whether the file is an image or video
+                
                 if allowed_file(filename, ALLOWED_IMAGE_EXTENSIONS):
-                    # If it's an image, compress it using Pillow
+                    
                     compress_image(filepath)
                 elif allowed_file(filename, ALLOWED_VIDEO_EXTENSIONS):
-                    # If it's a video, compress it using H.265 codec with FFmpeg
+                    
                     compress_video(filepath)
 
         flash('File(s) successfully uploaded')
@@ -69,26 +69,26 @@ def upload_file():
 
 
 def compress_image(filepath):
-    # Open the image using Pillow
+    
     image = Image.open(filepath)
 
-    # Compress the image (adjust quality as needed, lower values mean higher quality)
+    
     image.save(filepath, quality=85)
 
 
 def compress_video(filepath):
-    # Define the output file path for the compressed video
+    
     output_filepath = os.path.splitext(filepath)[0] + '_compressed.mp4'
 
-    # Use FFmpeg to compress the video using H.265 codec
+    
     subprocess.run([
         'ffmpeg',
-        '-i', filepath,             # Input video file
-        '-c:v', 'libx265',          # H.265 codec
-        '-preset', 'medium',        # Preset (adjust as needed, e.g., 'medium', 'fast', 'slow')
-        '-crf', '28',               # Constant Rate Factor (adjust for desired quality, lower values mean higher quality)
-        '-c:a', 'aac',              # AAC audio codec
-        '-strict', 'experimental',  # Allow experimental codecs
+        '-i', filepath,             
+        '-c:v', 'libx265',          
+        '-preset', 'medium',        
+        '-crf', '28',               
+        '-c:a', 'aac',              
+        '-strict', 'experimental',  
         output_filepath
     ], check=True)
 
