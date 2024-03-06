@@ -25,7 +25,12 @@ def allowed_file(filename):
 def compress_video(input_path, compression_percentage):
     output_path = os.path.splitext(input_path)[0] + f'_compressed_{compression_percentage}percent.mp4'
     os.system(f'{ffmpeg_path} -i {input_path} -c:v libx264 -crf {compression_percentage} {output_path}')
-    return output_path
+
+    # Get sizes of original and compressed files
+    original_size = os.path.getsize(input_path)
+    compressed_size = os.path.getsize(output_path)
+
+    return output_path, original_size, compressed_size
 
 @app.route('/')
 def upload_form():
@@ -46,19 +51,14 @@ def upload_file():
             video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             video_file.save(video_file_path)
 
-            compressed_video_path = compress_video(video_file_path, compression_percentage)
-            
-            # Get the URL or filepath for the compressed video
-            file_url = url_for('uploaded_file', filename=os.path.basename(compressed_video_path))
-            
+            compressed_video_path, original_size, compressed_size = compress_video(video_file_path, compression_percentage)
+            file_url = url_for('uploaded_file', filename=compressed_video_path)
+
             # Set popup message with file sizes
-            original_size = os.path.getsize(video_file_path)
-            compressed_size = os.path.getsize(compressed_video_path)
             popup_message = f'Video successfully uploaded and compressed at {compression_percentage}%. ' \
                             f'Original size: {original_size} bytes, Compressed size: {compressed_size} bytes'
-            
-            return render_template('upload.html', title='Video:', file_url=file_url, file_type='video',
-                                   original_size=original_size, compressed_size=compressed_size, popup_message=popup_message)
+
+            return render_template('upload.html', title='Copy Video URL:', file_url=file_url, file_type='video', popup_message=popup_message)
 
         else:
             flash('Invalid file type or no file selected')

@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    color: #d9534f;
+}
+
+form {
+    margin-top: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="file"] {
+    margin-bottom: 10px;
+}
+
+.slider {
+    width: 80%;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #5bc0de;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #31b0d5;
+}
+
+h2, p {
+    margin-top: 20px;
+}
+
+video {
+    width: 100%;
+    height: auto;
+}
+
+#compressionValue {
+    font-weight: bold;
+}

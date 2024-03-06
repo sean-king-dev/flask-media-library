@@ -8,6 +8,8 @@ app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024
 
 path = os.getcwd()
 
+ffmpeg_path = '/usr/bin/ffmpeg'
+
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
 
 if not os.path.isdir(UPLOAD_FOLDER):
@@ -15,10 +17,15 @@ if not os.path.isdir(UPLOAD_FOLDER):
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'])
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'mp4', 'mov', 'avi'])
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def compress_video(input_path):
+    output_path = os.path.splitext(input_path)[0] + '_compressed.mp4'
+    os.system(f'{ffmpeg_path} -i {input_path} -c:v libx265 -crf 28 {output_path}')
+    return output_path
 
 @app.route('/')
 def upload_form():
@@ -31,14 +38,20 @@ def uploaded_file(filename):
 @app.route('/', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        uploaded_file = request.files.get('file')
+        video_file = request.files.get('videoFile')
 
-        if uploaded_file and allowed_file(uploaded_file.filename):
-            filename = secure_filename(uploaded_file.filename)
-            uploaded_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            file_url = url_for('uploaded_file', filename=filename)
-            flash('File successfully uploaded')
-            return render_template('upload.html', title='Copy File URL:', file_url=file_url, file_type='file')
+        if video_file and allowed_file(video_file.filename):
+            filename = secure_filename(video_file.filename)
+            video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            video_file.save(video_file_path)
+
+            compressed_video_path = compress_video(video_file_path)
+            file_url = url_for('uploaded_file', filename=compressed_video_path)
+            
+            # Set popup message
+            popup_message = 'Video successfully uploaded and compressed'
+            
+            return render_template('upload.html', title='Copy Video URL:', file_url=file_url, file_type='video', popup_message=popup_message)
 
         else:
             flash('Invalid file type or no file selected')

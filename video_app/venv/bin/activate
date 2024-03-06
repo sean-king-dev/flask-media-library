@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/sjk/py-medialibrary/flask-media-library/server/venv"
+VIRTUAL_ENV="/home/sjk/py-medialibrary/flask-media-library/video_app/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
