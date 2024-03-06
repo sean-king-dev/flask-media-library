@@ -11,4 +11,5 @@ todos
 - [x] add compression range slider to video compression app
 - [ ] separate css styles
 - [x] add flask tests
-- [ ] add react to frontend templates
+- [x] set up react+vite
+- [x] add react to frontend templates

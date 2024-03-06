@@ -1,13 +1,15 @@
 import os
-from flask import Flask, flash, request, redirect, render_template, send_from_directory, url_for
+from flask import Flask, request, jsonify, send_from_directory, render_template
 from werkzeug.utils import secure_filename
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+
 app.secret_key = "secret key"
 app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024
 
 path = os.getcwd()
-
 ffmpeg_path = '/usr/bin/ffmpeg'
 
 UPLOAD_FOLDER = os.path.join(path, 'uploads')
@@ -47,22 +49,15 @@ def upload_file():
             video_file.save(video_file_path)
 
             compressed_video_path = compress_video(video_file_path, compression_percentage)
-            
-            
-            file_url = url_for('uploaded_file', filename=os.path.basename(compressed_video_path))
-            
-            
-            original_size = os.path.getsize(video_file_path)
-            compressed_size = os.path.getsize(compressed_video_path)
-            popup_message = f'Video successfully uploaded and compressed at {compression_percentage}%. ' \
-                            f'Original size: {original_size} bytes, Compressed size: {compressed_size} bytes'
-            
-            return render_template('upload.html', title='Video:', file_url=file_url, file_type='video',
-                                   original_size=original_size, compressed_size=compressed_size, popup_message=popup_message)
+
+            # Return the compressed file path or an identifier
+            return jsonify({
+                'message': 'File uploaded and processed successfully',
+                'compressed_file_path': compressed_video_path,
+            })
 
         else:
-            flash('Invalid file type or no file selected')
-            return redirect(request.url)
+            return jsonify({'error': 'Invalid file type or no file selected'}), 400
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=False, threaded=True)
