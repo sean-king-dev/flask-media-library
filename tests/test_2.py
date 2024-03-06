@@ -1,68 +1,52 @@
 import os
-from flask import Flask, flash, request, redirect, render_template, send_from_directory, url_for
-from werkzeug.utils import secure_filename
+import tempfile
+import unittest
+from flask import Flask
+from app import app, allowed_file
 
-app = Flask(__name__)
-app.secret_key = "secret key"
-app.config['MAX_CONTENT_LENGTH'] = 30 * 1024 * 1024
+class FlaskAppTest(unittest.TestCase):
+    def setUp(self):
+        app.config['TESTING'] = True
+        app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()
 
-path = os.getcwd()
+        self.app = app.test_client()
 
-ffmpeg_path = '/usr/bin/ffmpeg'
+    def tearDown(self):
+        pass
 
-UPLOAD_FOLDER = os.path.join(path, 'uploads')
+    def test_allowed_file(self):
+        self.assertTrue(allowed_file("example.txt"))
+        self.assertTrue(allowed_file("example.pdf"))
+        self.assertTrue(allowed_file("example.mp4"))
+        self.assertTrue(allowed_file("example.mov"))
+        self.assertTrue(allowed_file("example.avi"))
+        self.assertFalse(allowed_file("example.jpg"))
+        self.assertFalse(allowed_file("example.doc"))
 
-if not os.path.isdir(UPLOAD_FOLDER):
-    os.mkdir(UPLOAD_FOLDER)
+    def test_upload_form(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Upload Video', response.data)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    def test_upload_invalid_file_type(self):
+        response = self.app.post('/', data={'compressionPercentage': 50}, follow_redirects=True)
+        self.assertIn(b'Invalid file type or no file selected', response.data)
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'mp4', 'mov', 'avi'])
+    def test_upload_valid_file(self):
+        # Create a temporary file for testing
+        _, temp_file_path = tempfile.mkstemp(suffix='.mp4')
+        with open(temp_file_path, 'w') as temp_file:
+            temp_file.write("dummy content")
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        with open(temp_file_path, 'rb') as temp_file:
+            response = self.app.post('/', data={'compressionPercentage': 50},
+                                     content_type='multipart/form-data',
+                                     data={'videoFile': (temp_file, 'test_video.mp4')},
+                                     follow_redirects=True)
 
-def compress_video(input_path, compression_percentage):
-    output_path = os.path.splitext(input_path)[0] + f'_compressed_{compression_percentage}percent.mp4'
-    os.system(f'{ffmpeg_path} -i {input_path} -c:v libx264 -crf {compression_percentage} {output_path}')
-    return output_path
+        self.assertIn(b'Video successfully uploaded', response.data)
+        self.assertIn(b'Original size:', response.data)
+        self.assertIn(b'Compressed size:', response.data)
 
-@app.route('/')
-def upload_form():
-    return render_template('upload.html')
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/', methods=['POST'])
-def upload_file():
-    if request.method == 'POST':
-        video_file = request.files.get('videoFile')
-        compression_percentage = int(request.form.get('compressionPercentage', 50))
-
-        if video_file and allowed_file(video_file.filename):
-            filename = secure_filename(video_file.filename)
-            video_file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            video_file.save(video_file_path)
-
-            compressed_video_path = compress_video(video_file_path, compression_percentage)
-            
-            
-            file_url = url_for('uploaded_file', filename=os.path.basename(compressed_video_path))
-            
-            
-            original_size = os.path.getsize(video_file_path)
-            compressed_size = os.path.getsize(compressed_video_path)
-            popup_message = f'Video successfully uploaded and compressed at {compression_percentage}%. ' \
-                            f'Original size: {original_size} bytes, Compressed size: {compressed_size} bytes'
-            
-            return render_template('upload.html', title='Video:', file_url=file_url, file_type='video',
-                                   original_size=original_size, compressed_size=compressed_size, popup_message=popup_message)
-
-        else:
-            flash('Invalid file type or no file selected')
-            return redirect(request.url)
-
-if __name__ == "__main__":
-    app.run(host='127.0.0.1', port=5000, debug=False, threaded=True)
+if __name__ == '__main__':
+    unittest.main()
