@@ -9,4 +9,5 @@ todos
 - [/] separate into image upload app and video compression app
 - [/] expose url from video app
 - [/] add compression range slider to video compression app
+- [ ] separate css styles
 - [ ] add react to frontend templates
