@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <!-- Add jQuery for simplicity -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- Add custom script for popup message -->
+    <script>
+        $(document).ready(function(){
+            {% if popup_message %}
+                alert("{{ popup_message }}");
+            {% endif %}
+        });
+    </script>
+</head>
+<body>
+    <h1>File Upload</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+        <label for="videoFile">Upload Video:</label>
+        <input type="file" name="videoFile" accept="video/*"><br>
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if file_url %}
+        <h2>{{ title }}</h2>
+        <p>{{ title_link }}</p>
+        {% if file_type == 'video' %}
+            <video width="320" height="240" controls>
+                <source src="{{ file_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>
