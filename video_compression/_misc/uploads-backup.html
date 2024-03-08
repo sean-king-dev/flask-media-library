@@ -1,0 +1,26 @@
+<!doctype html>
+<title>Python Flask Multiple Files Upload Example</title>
+<h2>Select file(s) to upload</h2>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul class=flashes>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		  <p>{{ title }}</p>
+		  <a href="http://local:5000{{ file_url }}" target="_blank" rel="noopener noreferrer">http://local:5000{{ file_url }}</a>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+<form method="post" action="/" enctype="multipart/form-data">
+    <dl>
+		<p>
+			<input type="file" name="files[]" multiple="true" autocomplete="off" required>
+		</p>
+    </dl>
+    <p>
+		<input type="submit" value="Submit">
+	</p>
+</form>

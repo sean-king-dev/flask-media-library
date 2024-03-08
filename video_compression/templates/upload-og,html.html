@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" src="./style.css"></link>
+    <title>File Upload</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            color: #d9534f;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .slider {
+            width: 80%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #5bc0de;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #31b0d5;
+        }
+
+        h2, p {
+            margin-top: 20px;
+        }
+
+        .video_container {
+            width: 400px;
+            display: flex;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+        }
+
+        #compressionValue {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Upload</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+        <label for="videoFile">Upload Video:</label>
+        <input type="file" name="videoFile" accept="video/*"><br>
+        
+        <label for="compressionPercentage">Compression Percentage:</label>
+        <input type="range" name="compressionPercentage" min="1" max="100" value="50" class="slider" id="compressionRange">
+        <span id="compressionValue">50%</span><br>
+        
+        <button type="submit">Submit</button>
+    </form>
+
+
+
+{% if file_url %}
+    <h2>{{ title }}</h2>
+    <p>{{ title_link }}</p>
+    {% if file_type == 'video' %}
+    <div class="video_container">
+        <video controls>
+            <source src="{{ file_url }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    {% endif %}
+    <p>File URL: <a href="{{ file_url }}" target="_blank">{{ file_url }}</a></p>
+    
+    {% if original_size is defined and compressed_size is defined %}
+        <p>Original Size: {{ original_size }} bytes</p>
+        <p>Compressed Size: {{ compressed_size }} bytes</p>
+    {% endif %}
+{% endif %}
+
+
+    <script>
+        var compressionRange = document.getElementById('compressionRange');
+        var compressionValue = document.getElementById('compressionValue');
+
+        compressionRange.addEventListener('input', function() {
+            compressionValue.textContent = this.value + '%';
+        });
+    </script>
+
+</body>
+</html>
